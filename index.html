@@ -339,7 +339,7 @@
       <div id="message" class="message" aria-live="polite"></div>
     </section>
 
-    <footer>音声ファイル: sound/sound_gu.mp3 / sound/sound_choki.mp3 / sound/sound_pa.mp3 / sound_chorus.mp3</footer>
+    <footer>音声ファイル: jankenap/sound/sound_gu.mp3 / jankenap/sound/sound_choki.mp3 / jankenap/sound/sound_pa.mp3 / jankenap/sound/sound_chorus.mp3</footer>
   </main>
 
   <div id="sparkles" class="sparkles" aria-hidden="true"></div>
@@ -349,9 +349,9 @@
 
   <script>
     const hands = {
-      gu: { label: "グー", sound: "sound/sound_gu.mp3", beats: "choki" },
-      choki: { label: "チョキ", sound: "sound/sound_choki.mp3", beats: "pa" },
-      pa: { label: "パー", sound: "sound/sound_pa.mp3", beats: "gu" }
+      gu: { label: "グー", sound: "jankenap/sound/sound_gu.mp3", beats: "choki" },
+      choki: { label: "チョキ", sound: "jankenap/sound/sound_choki.mp3", beats: "pa" },
+      pa: { label: "パー", sound: "jankenap/sound/sound_pa.mp3", beats: "gu" }
     };
 
     const buttons = document.querySelectorAll(".choice-button");
@@ -366,9 +366,8 @@
     let chorusTimer = null;
 
     function playSound(fileName) {
-      // 1. 今の場所を基準にした正しいURLオブジェクトを強制的に作ります
-      const audioUrl = new URL(fileName, window.location.href);
-      const audio = new Audio(audioUrl.href);
+      // 大元（ドメイン直下）からjankenap/sound/...を指す正しいルートを組み立てます
+      const audio = new Audio("/" + fileName);
       
       audio.currentTime = 0;
       audio.play().catch(() => {
@@ -412,7 +411,7 @@
     }
 
     function triggerChorus() {
-      playSound("sound/sound_chorus.mp3");
+      playSound("jankenap/sound/sound_chorus.mp3");
       chorusBanner.classList.add("show");
       sparkles.classList.remove("show");
       void sparkles.offsetWidth;
