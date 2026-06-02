@@ -366,17 +366,15 @@
     let chorusTimer = null;
 
     function playSound(fileName) {
-   // 1. 今の場所を基準にした正しいURLオブジェクトを強制的に作ります
-    const audioUrl = new URL(fileName, window.location.href);
-    const audio = new Audio(audioUrl.href);
-  
-   audio.currentTime = 0;
-   audio.play().catch(() => {
-    console.info(`${fileName} を再生できませんでした。`);
+      // 1. 今の場所を基準にした正しいURLオブジェクトを強制的に作ります
+      const audioUrl = new URL(fileName, window.location.href);
+      const audio = new Audio(audioUrl.href);
+      
+      audio.currentTime = 0;
+      audio.play().catch(() => {
+        console.info(`${fileName} を再生できませんでした。`);
       });
-    } 
-  
-
+    }
 
     function getCpuHand() {
       const keys = Object.keys(hands);
