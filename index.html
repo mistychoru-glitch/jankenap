@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ゴスペル・ハーモニーじゃんけん</title>
+  <title>ゴスペル・ハーモニーじゃんけん — Rich Edition</title>
   <style>
     :root {
       --bg: #080808;
@@ -88,6 +88,65 @@
       backdrop-filter: blur(8px);
     }
 
+    .controls-bar {
+      width: min(620px, 100%);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .mode-toggle {
+      display: flex;
+      gap: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 4px;
+      background: rgba(0, 0, 0, 0.26);
+    }
+
+    .mode-btn {
+      padding: 8px 16px;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background 160ms ease, color 160ms ease;
+    }
+
+    .mode-btn.active {
+      background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+      color: #160f05;
+    }
+
+    .sound-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 6px 12px;
+      background: rgba(0, 0, 0, 0.26);
+    }
+
+    .icon-btn {
+      background: transparent;
+      border: none;
+      color: var(--gold-bright);
+      font-size: 1.2rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    input[type="range"] {
+      accent-color: var(--gold-bright);
+      width: 96px;
+    }
+
     .streak {
       width: min(420px, 100%);
       text-align: center;
@@ -114,6 +173,35 @@
       text-shadow: 0 0 24px rgba(255, 224, 138, 0.42);
     }
 
+    .harmony-meter {
+      width: min(420px, 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 16px;
+      border: 1px solid rgba(216, 170, 67, 0.28);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.26);
+    }
+
+    .harmony-meter span:first-child {
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .harmony-meter strong {
+      color: var(--gold-bright);
+      font-size: clamp(1.3rem, 5vw, 2rem);
+      text-shadow: 0 0 16px rgba(255, 224, 138, 0.28);
+    }
+
+    .harmony-meter.progressing {
+      animation: harmonyFlash 700ms ease;
+    }
+
     .choices {
       width: min(600px, 100%);
       display: grid;
@@ -129,7 +217,7 @@
       background: linear-gradient(180deg, #2b2415, #0c0b09);
       box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12);
       cursor: pointer;
-      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
     }
 
     .choice-button:hover,
@@ -142,6 +230,12 @@
 
     .choice-button:active {
       transform: translateY(0);
+    }
+
+    .choice-button:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+      transform: none;
     }
 
     .hand-icon {
@@ -204,6 +298,98 @@
       color: var(--red);
     }
 
+    .stats-panel {
+      width: min(620px, 100%);
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    @media (min-width: 460px) {
+      .stats-panel {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+    }
+
+    .stat-box {
+      display: grid;
+      align-content: center;
+      gap: 4px;
+      padding: 10px 6px;
+      border: 1px solid rgba(216, 170, 67, 0.24);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.32);
+      text-align: center;
+    }
+
+    .stat-box span:first-child {
+      color: var(--muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .stat-value {
+      font-size: clamp(1.05rem, 3.4vw, 1.4rem);
+      font-weight: 900;
+      color: var(--gold-bright);
+    }
+
+    .history-panel {
+      width: min(620px, 100%);
+    }
+
+    .history-panel-label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      text-align: center;
+    }
+
+    .history-log {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.26);
+    }
+
+    .history-log:empty::after {
+      content: "対戦するとここに履歴が並びます";
+      color: var(--muted);
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    .history-chip {
+      flex: 0 0 auto;
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      font-size: 1.3rem;
+      border-radius: 6px;
+      border: 2px solid var(--muted);
+      background: rgba(20, 18, 14, 0.6);
+    }
+
+    .history-chip.win {
+      border-color: var(--green);
+    }
+
+    .history-chip.lose {
+      border-color: var(--red);
+    }
+
+    .history-chip.draw {
+      border-color: var(--muted);
+    }
+
     .chorus-banner {
       position: fixed;
       inset: auto 16px 32px;
@@ -241,11 +427,40 @@
         radial-gradient(circle at 42% 62%, var(--gold) 0 3px, transparent 4px),
         radial-gradient(circle at 82% 70%, var(--gold-bright) 0 3px, transparent 4px),
         radial-gradient(circle at 12% 78%, var(--gold) 0 2px, transparent 3px);
-      z-index: 4;
+      z-index: 3;
     }
 
     .sparkles.show {
       animation: sparkleBurst 1100ms ease-out;
+    }
+
+    #confettiCanvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    .countdown-overlay {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+      z-index: 6;
+    }
+
+    .countdown-text {
+      font-size: clamp(3rem, 12vw, 7rem);
+      font-weight: 1000;
+      color: var(--gold-bright);
+      text-shadow: 0 0 30px rgba(255, 224, 138, 0.6), 0 4px 0 #000;
+      opacity: 0;
+      transform: scale(0.5);
+    }
+
+    .countdown-text.show {
+      animation: countdownPop 480ms ease forwards;
     }
 
     footer {
@@ -277,6 +492,37 @@
       }
     }
 
+    @keyframes harmonyFlash {
+      0% {
+        border-color: rgba(255, 224, 138, 0.28);
+        transform: scale(1);
+      }
+      45% {
+        border-color: var(--gold-bright);
+        transform: scale(1.04);
+        box-shadow: 0 0 28px rgba(255, 224, 138, 0.25);
+      }
+      100% {
+        border-color: rgba(255, 224, 138, 0.28);
+        transform: scale(1);
+      }
+    }
+
+    @keyframes countdownPop {
+      0% {
+        opacity: 0;
+        transform: scale(0.4);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.15);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
     @media (max-width: 580px) {
       .app {
         padding: 24px 12px;
@@ -301,13 +547,29 @@
   <main class="app">
     <header class="title">
       <h1>Gospel Harmony Janken</h1>
-      <p>勝利のたびに声が重なり、3連勝で大コーラスが鳴り響きます。</p>
+      <p>勝利のたびに声が重なり、3連勝で大コーラスが鳴り響きます。（Rich Edition）</p>
     </header>
 
     <section class="stage" aria-label="じゃんけんステージ">
+      <div class="controls-bar">
+        <div class="mode-toggle" role="group" aria-label="難易度選択">
+          <button type="button" class="mode-btn active" data-difficulty="easy">イージー</button>
+          <button type="button" class="mode-btn" data-difficulty="hard">ハード</button>
+        </div>
+        <div class="sound-controls">
+          <button type="button" id="muteBtn" class="icon-btn" aria-label="サウンドのON/OFF">🔊</button>
+          <input type="range" id="volumeSlider" min="0" max="100" value="80" aria-label="音量" />
+        </div>
+      </div>
+
       <div class="streak" aria-live="polite">
         <span class="streak-label">Current Winning Streak</span>
         <span id="streakCount" class="streak-number">0</span>
+      </div>
+
+      <div id="harmonyMeter" class="harmony-meter" aria-live="polite">
+        <span>Harmony Progress</span>
+        <strong id="harmonyStep">0 / 3</strong>
       </div>
 
       <div class="choices" aria-label="手を選ぶ">
@@ -337,46 +599,184 @@
       </div>
 
       <div id="message" class="message" aria-live="polite"></div>
+
+      <div class="stats-panel" aria-label="戦績">
+        <div class="stat-box">
+          <span>勝ち</span>
+          <span id="statWins" class="stat-value">0</span>
+        </div>
+        <div class="stat-box">
+          <span>負け</span>
+          <span id="statLosses" class="stat-value">0</span>
+        </div>
+        <div class="stat-box">
+          <span>あいこ</span>
+          <span id="statDraws" class="stat-value">0</span>
+        </div>
+        <div class="stat-box">
+          <span>勝率</span>
+          <span id="statRate" class="stat-value">0%</span>
+        </div>
+        <div class="stat-box">
+          <span>ベスト連勝</span>
+          <span id="statBest" class="stat-value">0</span>
+        </div>
+      </div>
+
+      <div class="history-panel">
+        <span class="history-panel-label">対戦履歴（最新8戦）</span>
+        <div id="historyLog" class="history-log"></div>
+      </div>
     </section>
 
-    <footer>音声ファイル: jankenap/sound/sound_gu.mp3 / jankenap/sound/sound_choki.mp3 / jankenap/sound/sound_pa.mp3 / jankenap/sound/sound_chorus.mp3</footer>
+    <footer>
+      音声ファイル: sound/sound_gu.mp3 / sound/sound_choki.mp3 / sound/sound_pa.mp3 / sound/sound_chorus.mp3<br />
+      キーボード操作: 1=グー / 2=チョキ / 3=パー
+    </footer>
   </main>
 
+  <canvas id="confettiCanvas" aria-hidden="true"></canvas>
   <div id="sparkles" class="sparkles" aria-hidden="true"></div>
   <div id="chorusBanner" class="chorus-banner" role="status" aria-live="assertive">
     Harmony Complete!
   </div>
+  <div class="countdown-overlay" aria-hidden="true">
+    <span id="countdownText" class="countdown-text"></span>
+  </div>
 
   <script>
+    const soundPath = "sound/";
+    const STATS_KEY = "gospelJankenStats";
+    const SETTINGS_KEY = "gospelJankenSettings";
+
     const hands = {
-      gu: { label: "グー", sound: "jankenap/sound/sound_gu.mp3", beats: "choki" },
-      choki: { label: "チョキ", sound: "jankenap/sound/sound_choki.mp3", beats: "pa" },
-      pa: { label: "パー", sound: "jankenap/sound/sound_pa.mp3", beats: "gu" }
+      gu: { label: "グー", icon: "✊", sound: `${soundPath}sound_gu.mp3`, beats: "choki" },
+      choki: { label: "チョキ", icon: "✌", sound: `${soundPath}sound_choki.mp3`, beats: "pa" },
+      pa: { label: "パー", icon: "✋", sound: `${soundPath}sound_pa.mp3`, beats: "gu" }
     };
+
+    const chordProgression = [
+      { name: "Chord 1", sound: `${soundPath}sound_chorus.mp3`, label: "Opening Harmony" },
+      { name: "Chord 2", sound: `${soundPath}sound_chorus.mp3`, label: "Rising Harmony" },
+      { name: "Chord 3", sound: `${soundPath}sound_chorus.mp3`, label: "Final Harmony" }
+    ];
 
     const buttons = document.querySelectorAll(".choice-button");
     const streakCount = document.getElementById("streakCount");
+    const harmonyMeter = document.getElementById("harmonyMeter");
+    const harmonyStep = document.getElementById("harmonyStep");
     const cpuHand = document.getElementById("cpuHand");
     const resultText = document.getElementById("resultText");
     const message = document.getElementById("message");
     const chorusBanner = document.getElementById("chorusBanner");
     const sparkles = document.getElementById("sparkles");
+    const countdownText = document.getElementById("countdownText");
+    const modeButtons = document.querySelectorAll(".mode-btn");
+    const muteBtn = document.getElementById("muteBtn");
+    const volumeSlider = document.getElementById("volumeSlider");
+    const statWins = document.getElementById("statWins");
+    const statLosses = document.getElementById("statLosses");
+    const statDraws = document.getElementById("statDraws");
+    const statRate = document.getElementById("statRate");
+    const statBest = document.getElementById("statBest");
+    const historyLog = document.getElementById("historyLog");
+    const confettiCanvas = document.getElementById("confettiCanvas");
+    const confettiCtx = confettiCanvas.getContext("2d");
 
     let streak = 0;
+    let chordIndex = 0;
     let chorusTimer = null;
+    let isProcessing = false;
+    let playerHistory = [];
+    let matchHistory = [];
+    let particles = [];
+    let animatingConfetti = false;
+
+    function loadStats() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STATS_KEY));
+        if (saved && typeof saved === "object") {
+          return {
+            wins: saved.wins || 0,
+            losses: saved.losses || 0,
+            draws: saved.draws || 0,
+            bestStreak: saved.bestStreak || 0
+          };
+        }
+      } catch (e) {
+        // localStorageが使えない場合は初期値にフォールバック
+      }
+      return { wins: 0, losses: 0, draws: 0, bestStreak: 0 };
+    }
+
+    function saveStats() {
+      try {
+        localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+      } catch (e) {
+        // 保存できなくてもゲームは続行
+      }
+    }
+
+    function loadSettings() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY));
+        if (saved && typeof saved === "object") {
+          return {
+            difficulty: saved.difficulty === "hard" ? "hard" : "easy",
+            muted: !!saved.muted,
+            volume: typeof saved.volume === "number" ? saved.volume : 0.8
+          };
+        }
+      } catch (e) {
+        // フォールバック
+      }
+      return { difficulty: "easy", muted: false, volume: 0.8 };
+    }
+
+    function saveSettings() {
+      try {
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+      } catch (e) {
+        // 保存できなくてもゲームは続行
+      }
+    }
+
+    const stats = loadStats();
+    const settings = loadSettings();
+
+    function wait(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
 
     function playSound(fileName) {
-      // 大元（ドメイン直下）からjankenap/sound/...を指す正しいルートを組み立てます
-      const audio = new Audio("/" + fileName);
-      
+      if (settings.muted) return;
+      const audio = new Audio(fileName);
+      audio.volume = settings.volume;
       audio.currentTime = 0;
       audio.play().catch(() => {
-        console.info(`${fileName} を再生できませんでした。`);
+        console.info(`${fileName} を再生できませんでした。音声ファイルを同じフォルダに置いてください。`);
       });
+    }
+
+    function updateHarmonyMeter() {
+      harmonyStep.textContent = `${chordIndex} / ${chordProgression.length}`;
+      harmonyMeter.classList.remove("progressing");
+      void harmonyMeter.offsetWidth;
+      harmonyMeter.classList.add("progressing");
     }
 
     function getCpuHand() {
       const keys = Object.keys(hands);
+      if (settings.difficulty === "hard" && playerHistory.length >= 3 && Math.random() < 0.7) {
+        const recent = playerHistory.slice(-5);
+        const freq = {};
+        recent.forEach((h) => {
+          freq[h] = (freq[h] || 0) + 1;
+        });
+        const mostFrequent = Object.entries(freq).sort((a, b) => b[1] - a[1])[0][0];
+        const counter = keys.find((k) => hands[k].beats === mostFrequent);
+        if (counter) return counter;
+      }
       return keys[Math.floor(Math.random() * keys.length)];
     }
 
@@ -385,33 +785,167 @@
       return hands[player].beats === cpu ? "win" : "lose";
     }
 
-    function updateResult(result) {
+    function disableButtons(disabled) {
+      buttons.forEach((button) => {
+        button.disabled = disabled;
+      });
+    }
+
+    function showCountdown(text) {
+      countdownText.textContent = text;
+      countdownText.classList.remove("show");
+      void countdownText.offsetWidth;
+      countdownText.classList.add("show");
+    }
+
+    function hideCountdown() {
+      countdownText.classList.remove("show");
+      countdownText.textContent = "";
+    }
+
+    function resultLabel(result) {
+      if (result === "win") return "勝ち";
+      if (result === "lose") return "負け";
+      return "あいこ";
+    }
+
+    function renderStats() {
+      statWins.textContent = stats.wins;
+      statLosses.textContent = stats.losses;
+      statDraws.textContent = stats.draws;
+      const total = stats.wins + stats.losses + stats.draws;
+      const rate = total > 0 ? Math.round((stats.wins / total) * 100) : 0;
+      statRate.textContent = `${rate}%`;
+      statBest.textContent = stats.bestStreak;
+    }
+
+    function renderHistory() {
+      historyLog.innerHTML = "";
+      matchHistory
+        .slice()
+        .reverse()
+        .forEach((m) => {
+          const chip = document.createElement("div");
+          chip.className = `history-chip ${m.result}`;
+          chip.textContent = hands[m.player].icon;
+          chip.title = `あなた:${hands[m.player].label} / CPU:${hands[m.cpu].label} → ${resultLabel(m.result)}`;
+          historyLog.appendChild(chip);
+        });
+    }
+
+    function resizeConfettiCanvas() {
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+    }
+
+    function confettiBurst(count) {
+      const colors = ["#ffe08a", "#d8aa43", "#fff7df", "#71d88d"];
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: window.innerWidth / 2,
+          y: window.innerHeight * 0.4,
+          vx: (Math.random() - 0.5) * 10,
+          vy: Math.random() * -8 - 2,
+          gravity: 0.28,
+          size: Math.random() * 6 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          rotSpeed: (Math.random() - 0.5) * 10,
+          life: 0,
+          maxLife: 90 + Math.random() * 40
+        });
+      }
+      if (!animatingConfetti) {
+        animatingConfetti = true;
+        requestAnimationFrame(animateConfetti);
+      }
+    }
+
+    function animateConfetti() {
+      confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += p.gravity;
+        p.rotation += p.rotSpeed;
+        p.life += 1;
+        confettiCtx.save();
+        confettiCtx.translate(p.x, p.y);
+        confettiCtx.rotate((p.rotation * Math.PI) / 180);
+        confettiCtx.globalAlpha = Math.max(0, 1 - p.life / p.maxLife);
+        confettiCtx.fillStyle = p.color;
+        confettiCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+        confettiCtx.restore();
+      });
+      particles = particles.filter((p) => p.life < p.maxLife && p.y < confettiCanvas.height + 50);
+      if (particles.length > 0) {
+        requestAnimationFrame(animateConfetti);
+      } else {
+        animatingConfetti = false;
+        confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+      }
+    }
+
+    function updateResult(result, playerHand, cpu) {
       message.className = "message";
 
       if (result === "win") {
         streak += 1;
+        stats.wins += 1;
         resultText.textContent = "勝ち";
-        message.textContent = "Good harmony! 連勝が重なりました。";
+        message.textContent = "Good harmony! 3連勝ごとにコード進行が進みます。";
         message.classList.add("win");
+        confettiBurst(24);
       } else if (result === "lose") {
         streak = 0;
+        stats.losses += 1;
         resultText.textContent = "負け";
-        message.textContent = "コーラスは一度リセット。次の一声へ。";
+        message.textContent = "連勝はリセット。和音の進行はそのまま続きます。";
         message.classList.add("lose");
       } else {
+        stats.draws += 1;
         resultText.textContent = "あいこ";
         message.textContent = "同じ音が響きました。連勝数はそのまま。";
       }
 
+      if (streak > stats.bestStreak) {
+        stats.bestStreak = streak;
+      }
+
       streakCount.textContent = streak;
 
+      matchHistory.push({ player: playerHand, cpu, result });
+      if (matchHistory.length > 8) matchHistory.shift();
+      renderHistory();
+
+      renderStats();
+      saveStats();
+
       if (streak > 0 && streak % 3 === 0) {
-        triggerChorus();
+        triggerHarmonyChord();
       }
     }
 
-    function triggerChorus() {
-      playSound("jankenap/sound/sound_chorus.mp3");
+    function triggerHarmonyChord() {
+      const chord = chordProgression[chordIndex];
+      let shouldResetHarmony = false;
+
+      playSound(chord.sound);
+      chordIndex += 1;
+      updateHarmonyMeter();
+      confettiBurst(70);
+
+      if (chordIndex === chordProgression.length) {
+        playSound(`${soundPath}sound_chorus.mp3`);
+        chorusBanner.textContent = "Song Complete!";
+        message.textContent = "3つの和音がつながって、小さな曲が完成しました。";
+        chordIndex = 0;
+        shouldResetHarmony = true;
+      } else {
+        chorusBanner.textContent = `${chord.label}! Next: ${chordProgression[chordIndex].name}`;
+        message.textContent = `${chord.label} が鳴りました。次の3連勝で続きの和音へ。`;
+      }
+
       chorusBanner.classList.add("show");
       sparkles.classList.remove("show");
       void sparkles.offsetWidth;
@@ -420,22 +954,90 @@
       clearTimeout(chorusTimer);
       chorusTimer = setTimeout(() => {
         chorusBanner.classList.remove("show");
+        if (shouldResetHarmony) {
+          updateHarmonyMeter();
+        }
       }, 2400);
     }
 
-    function handleChoice(event) {
-      const playerHand = event.currentTarget.dataset.hand;
+    async function handleChoice(playerHand) {
+      if (isProcessing || !hands[playerHand]) return;
+      isProcessing = true;
+      disableButtons(true);
+      cpuHand.textContent = "?";
+      resultText.textContent = "...";
+      message.className = "message";
+      message.textContent = "";
+
+      showCountdown("ジャンケン…");
+      await wait(500);
+      showCountdown("ポン!");
+      await wait(450);
+      hideCountdown();
+
       const cpu = getCpuHand();
       const result = judge(playerHand, cpu);
 
       playSound(hands[playerHand].sound);
       cpuHand.textContent = hands[cpu].label;
-      updateResult(result);
+
+      playerHistory.push(playerHand);
+      if (playerHistory.length > 10) playerHistory.shift();
+
+      updateResult(result, playerHand, cpu);
+
+      disableButtons(false);
+      isProcessing = false;
+    }
+
+    function applyDifficultyUI() {
+      modeButtons.forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.difficulty === settings.difficulty);
+      });
+    }
+
+    function applySoundUI() {
+      muteBtn.textContent = settings.muted ? "🔇" : "🔊";
+      volumeSlider.value = Math.round(settings.volume * 100);
     }
 
     buttons.forEach((button) => {
-      button.addEventListener("click", handleChoice);
+      button.addEventListener("click", () => handleChoice(button.dataset.hand));
     });
+
+    modeButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        settings.difficulty = btn.dataset.difficulty;
+        playerHistory = [];
+        applyDifficultyUI();
+        saveSettings();
+      });
+    });
+
+    muteBtn.addEventListener("click", () => {
+      settings.muted = !settings.muted;
+      applySoundUI();
+      saveSettings();
+    });
+
+    volumeSlider.addEventListener("input", () => {
+      settings.volume = Number(volumeSlider.value) / 100;
+      saveSettings();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      const keyMap = { "1": "gu", "2": "choki", "3": "pa" };
+      const hand = keyMap[event.key];
+      if (hand) handleChoice(hand);
+    });
+
+    window.addEventListener("resize", resizeConfettiCanvas);
+    resizeConfettiCanvas();
+
+    applyDifficultyUI();
+    applySoundUI();
+    renderStats();
+    renderHistory();
   </script>
 </body>
 </html>
